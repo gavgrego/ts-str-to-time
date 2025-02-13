@@ -30,5 +30,3 @@ export const strtotime = (
 
   return null
 }
-
-console.log(strtotime("1 week ago"))

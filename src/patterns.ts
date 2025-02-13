@@ -10,14 +10,29 @@ const relativeTimePattern: DatePattern = {
     const unit = matches[3].toLowerCase()
     const date = new Date(baseDate)
 
+    // Store the initial hours to check for DST changes
+    const initialHours = date.getUTCHours()
+
     const handlers: Record<string, () => void> = {
-      second: () => date.setSeconds(date.getSeconds() + amount),
-      minute: () => date.setMinutes(date.getMinutes() + amount),
-      hour: () => date.setHours(date.getHours() + amount),
-      day: () => date.setDate(date.getDate() + amount),
-      week: () => date.setDate(date.getDate() + amount * 7),
-      month: () => date.setMonth(date.getMonth() + amount),
-      year: () => date.setFullYear(date.getFullYear() + amount)
+      second: () => date.setUTCSeconds(date.getUTCSeconds() + amount),
+      minute: () => date.setUTCMinutes(date.getUTCMinutes() + amount),
+      hour: () => date.setUTCHours(date.getUTCHours() + amount),
+      day: () => date.setUTCDate(date.getUTCDate() + amount),
+      week: () => date.setUTCDate(date.getUTCDate() + amount * 7),
+      month: () => {
+        date.setUTCMonth(date.getUTCMonth() + amount)
+        // Correct hours if DST transition occurred
+        if (date.getUTCHours() !== initialHours) {
+          date.setUTCHours(initialHours)
+        }
+      },
+      year: () => {
+        date.setUTCFullYear(date.getUTCFullYear() + amount)
+        // Correct hours if DST transition occurred
+        if (date.getUTCHours() !== initialHours) {
+          date.setUTCHours(initialHours)
+        }
+      }
     }
 
     handlers[unit]?.()
@@ -43,7 +58,7 @@ const weekdayPattern: DatePattern = {
     const targetDay = weekdays.indexOf(weekday)
     const date = new Date(baseDate)
 
-    const currentDay = date.getDay()
+    const currentDay = date.getUTCDay()
     let daysToAdd = (targetDay - currentDay + 7) % 7
 
     if (direction === "next") {
@@ -52,7 +67,7 @@ const weekdayPattern: DatePattern = {
       daysToAdd -= 7
     }
 
-    date.setDate(date.getDate() + daysToAdd)
+    date.setUTCDate(date.getUTCDate() + daysToAdd)
     return date
   }
 }
