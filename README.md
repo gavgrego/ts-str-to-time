@@ -1,4 +1,5 @@
-# ts-str-to-time
+# str-to-time-ts
+[![npm version](https://img.shields.io/npm/v/PACKAGE_NAME.svg)](str-to-time-ts)
 
 A TypeScript implementation of the strtotime function from PHP.
 
